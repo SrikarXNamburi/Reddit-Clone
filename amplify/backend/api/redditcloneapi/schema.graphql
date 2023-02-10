@@ -1,0 +1,33 @@
+type Post
+  @model
+  @auth(
+    rules: [
+      #Creator of post can do any action
+      { allow: owner, operations: [create, update, delete, read] }
+      #Signed in User can do read operation
+      { allow: private, operations: [read] }
+      #Guest users can do read operation
+      { allow: public, operations: [read] }
+    ]
+  ) {
+  id: ID!
+  title: String!
+  comments: [Comment] @hasMany
+}
+
+type Comment
+  @model
+  @auth(
+    rules: [
+      #Creator of post can do any action
+      { allow: owner, operations: [create, update, delete, read] }
+      #Signed in User can do read operation
+      { allow: private, operations: [read] }
+      #Guest users can do read operation
+      { allow: public, operations: [read] }
+    ]
+  ) {
+  id: ID!
+  post: Post @belongsTo
+  content: String!
+}
