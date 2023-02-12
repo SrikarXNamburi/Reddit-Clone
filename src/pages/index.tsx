@@ -1,7 +1,29 @@
+import { Post, ListPostsQuery } from "@/API";
 import { useUser } from "@/context/AuthContext";
-
+import { listPosts } from "@/graphql/queries";
+import { API } from "aws-amplify";
+import { useEffect, useState } from "react";
 export default function Home() {
   const { user } = useUser();
+  const [posts, setPost] = useState<Post[]>([]);
+  useEffect(() => {
+    //Make a request to the Graphql API
+    const fetchPostsFromApi = async (): Promise<Post[]> => {
+      const allPosts = (await API.graphql({ query: listPosts })) as {
+        data: ListPostsQuery;
+        error: any[];
+      };
+      if (allPosts.data) {
+        setPost(allPosts.data.listPosts?.items as Post[]);
+        return allPosts.data.listPosts?.items as Post[];
+      } else {
+        throw new Error("Coundn't get post");
+      }
+    };
+    fetchPostsFromApi();
+  }, []);
+  console.log("User: ", user);
+  console.log("Posts: ", posts);
   return <>Srikar</>;
 }
 
